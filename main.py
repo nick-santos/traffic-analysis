@@ -46,11 +46,16 @@ for image_path in images:
 
 # Resultados
 
+output_folder = Path("results/detections")
+output_folder.mkdir(parents=True, exist_ok=True)
+
 for image_path in images:
     results = model(str(image_path))
 
     for result in results:
-        result.show()
+        output_path = output_folder / image_path.name
+        result.save(filename=str(output_path))
+    
 
 image_name = ""
 total_confidence = 0
