@@ -58,7 +58,7 @@ for image_path in images:
         output_path = output_folder / image_path.name
         result.save(filename=str(output_path))
 
-    
+# ----------------------------------    
 # Resultados
 
 image_counts = {}
@@ -87,7 +87,7 @@ for detection in detections:
 
 
 
-
+# ----------------------------------
 # # Totais
 
 # print("\nTotal de veículos: ", len(detections))
@@ -109,7 +109,7 @@ for detection in detections:
 
 
 
-
+# ----------------------------------
 # Criação do DataFrame
 
 df = pd.DataFrame(detections)
@@ -148,5 +148,36 @@ qtt_vehicles = vehicles_per_images.max()
 
 print(f"\nImagem com mais veículos: {image_more_vh} com {qtt_vehicles}")
 
+# ----------------------------------
+# Estatística Descritiva
+
+print("\nEstatística Descritiva:")
+
+print(vehicles_per_images.describe())
+
 print(f"Média de veículos por imagem: {vehicles_per_images.mean()}")
 
+print("\nMediana: ")
+print(vehicles_per_images.median())
+
+print("\nModa: ")
+print(vehicles_per_images.mode())
+
+print("\nDesvio padrão: ")
+print(vehicles_per_images.std())
+
+print("\nMínimo: ")
+print(vehicles_per_images.min())
+print("\nMáximo: ")
+print(vehicles_per_images.max())
+
+print("\nQ0 (mínimo): ")
+print(vehicles_per_images.quantile(0))
+print("\nQ1: ")
+print(vehicles_per_images.quantile(0.25))
+print("\nQ2: ")
+print(vehicles_per_images.quantile(0.50))
+print("\nQ3: ")
+print(vehicles_per_images.quantile(0.75))
+print("\nQ4 (máximo): ")
+print(vehicles_per_images.quantile(1))
