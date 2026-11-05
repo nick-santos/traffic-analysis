@@ -1,5 +1,6 @@
 from ultralytics import YOLO
 from pathlib import Path
+import pandas as pd
 
 # Carregar o modelo
 model = YOLO("yolo11n.pt")
@@ -44,7 +45,8 @@ for image_path in images:
 
                 detections.append(detection)
 
-# Resultados
+
+# Guadar imagens com Bounding boxes
 
 output_folder = Path("results/detections")
 output_folder.mkdir(parents=True, exist_ok=True)
@@ -55,38 +57,96 @@ for image_path in images:
     for result in results:
         output_path = output_folder / image_path.name
         result.save(filename=str(output_path))
+
     
+# Resultados
+
+image_counts = {}
 
 image_name = ""
 total_confidence = 0
 
-print("\nDetecções:")
+# print("\nDetecções:")
 
 for detection in detections:
 
     if image_name != detection["image"]:
         image_name = detection["image"]
-        print(f"\n{image_name}")
+        # print(f"\n{image_name}")
+
+        image_counts[image_name] = 0
+
+    image_counts[image_name] += 1
 
     category = detection["category"]
     vehicle_counts[category] += 1
 
     total_confidence += detection["confidence"]
 
-    print(detection)
+    # print(detection)
 
-# Totais
-print("\nTotal de veículos: ", len(detections))
 
-print("\nTotal de veículos por categoria:")
 
-for category, count in vehicle_counts.items():
-    print(f"{category}: {count}")
 
-# Media de confiança
-if len(detections) > 0:
-    average_confidence = total_confidence / len(detections)
-else:
-    average_confidence = 0
+# # Totais
 
-print(f"\nConfiança média: {average_confidence:.2%}")
+# print("\nTotal de veículos: ", len(detections))
+
+# print("\nTotal de veículos por categoria:")
+# for category, count in vehicle_counts.items():
+#     print(f"{category}: {count}")
+
+# print(image_counts)
+# print(f"\nImagem com mais detecções: {max(image_counts, key=image_counts.get)}")
+
+# # Media de confiança
+# if len(detections) > 0:
+#     average_confidence = total_confidence / len(detections)
+# else:
+#     average_confidence = 0
+
+# print(f"\nConfiança média: {average_confidence:.2%}")
+
+
+
+
+# Criação do DataFrame
+
+df = pd.DataFrame(detections)
+
+print(df)
+
+print("\nPrimeiras linhas:")
+print(df.head())
+
+print("\nInformações:")
+print(df.info())
+
+print("\nDimensões:")
+print(df.shape)
+
+# Salvando o DataFrame como CSV
+output_folder = Path("results")
+output_folder.mkdir(exist_ok=True)
+df.to_csv(output_folder / "detections.csv", index=False)
+
+
+print("\nTotal de veículos: ", len(df))
+
+print(f"\nMédia de confiança: {df['confidence'].mean():.2%}")
+
+print(f"\nTotal de ônibus: \n{df[df['category'] == 'bus']}")
+
+print(f"\nVeículos por categoria: \n{df['category'].value_counts()}")
+
+
+vehicles_per_images = df.groupby('image')['category'].count()
+
+image_more_vh = vehicles_per_images.idxmax()
+
+qtt_vehicles = vehicles_per_images.max()
+
+print(f"\nImagem com mais veículos: {image_more_vh} com {qtt_vehicles}")
+
+print(f"Média de veículos por imagem: {vehicles_per_images.mean()}")
+
