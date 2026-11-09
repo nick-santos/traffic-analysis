@@ -1,7 +1,10 @@
 from ultralytics import YOLO
 from pathlib import Path
 
-from src.detection import detect_vehicles, save_detection_images 
+from src.detection import (
+    detect_vehicles, 
+    save_detection_images 
+)
 from src.data_analysis import (
     create_dataframe, 
     check_dataframe_info, 
@@ -10,17 +13,23 @@ from src.data_analysis import (
     analyze_vehicles, 
     descriptive_statistics
 )
+from src.visualization import (
+    plot_vehicles_per_category,
+    plot_vehicles_per_image
+)
 
 # Pastas do projeto
 IMAGE_FOLDER = Path("dataset/images")
 RESULTS_FOLDER = Path("results")
 RESULTS_IMAGES_FOLDER = RESULTS_FOLDER / "detections"
+RESULTS_GRAPHS_FOLDER = RESULTS_FOLDER / "graphs"
 
 
 def main():
     # Criar pastas de resultados
     RESULTS_FOLDER.mkdir(exist_ok=True)
     RESULTS_IMAGES_FOLDER.mkdir(parents=True, exist_ok=True)
+    RESULTS_GRAPHS_FOLDER.mkdir(parents=True, exist_ok=True)
 
     # Carregar o modelo
     model = YOLO("yolo11n.pt")
@@ -52,6 +61,11 @@ def main():
 
     else:
         print("Dataframe vazio.")
+
+    # Visualização dos dados
+    if not df.empty:
+        plot_vehicles_per_category(vehicles_per_category, RESULTS_GRAPHS_FOLDER)
+        plot_vehicles_per_image(vehicles_per_image, RESULTS_GRAPHS_FOLDER)
 
 
 if __name__ == "__main__":
